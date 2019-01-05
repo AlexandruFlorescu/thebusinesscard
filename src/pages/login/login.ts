@@ -3,6 +3,7 @@ import { NavController, AlertController, LoadingController, Loading, IonicPage }
 import { AuthService } from '../../providers/auth-service/auth-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterPage } from '../register/register';
+import { HomePage } from '../home/home';
 
 /**
  * Generated class for the LoginPage page.
@@ -18,9 +19,10 @@ import { RegisterPage } from '../register/register';
 })
 export class LoginPage {
    loading: Loading;
+   form: FormGroup;
    registerCredentials = { email: '', password: '' };
 
-   constructor(private nav: NavController, private fb: FormBuilder, private auth: AuthService, private alertCtrl: AlertController, private loadingCtrl: LoadingController) 
+   constructor(private nav: NavController, private fb: FormBuilder, private auth: AuthService, private alertCtrl: AlertController, private loadingCtrl: LoadingController)
    {
    		this.form = fb.group({
    			email: ['', Validators.compose([Validators.required, Validators.email])],
@@ -34,16 +36,14 @@ export class LoginPage {
 
    public login() {
      this.showLoading()
-     this.auth.login(this.registerCredentials).subscribe(allowed => {
-       if (allowed) {
-         this.nav.setRoot('HomePage');
-       } else {
-         this.showError("Access Denied");
-       }
-     },
-       error => {
-         this.showError(error);
-       });
+     let user = this.auth.signInWithEmail(this.registerCredentials)
+     console.log(user);
+     if (user) {
+       this.nav.setRoot(HomePage);
+     } else {
+       this.showError("Access Denied");
+     }
+
    }
 
    showLoading() {
@@ -62,6 +62,6 @@ export class LoginPage {
        subTitle: text,
        buttons: ['OK']
      });
-     alert.present(prompt);
+     alert.present();
    }
 }

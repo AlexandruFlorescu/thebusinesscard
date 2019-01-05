@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginPage } from '../login/login';
+import { AuthService } from '../../providers/auth-service/auth-service';
+import { HomePage } from '../home/home';
 
 
 /**
@@ -19,11 +22,9 @@ export class RegisterPage {
 
   	signupError: string;
   	form: FormGroup;
+    registerCredentials = { email: '', password: '' };
 
-  	constructor(
-  		fb: FormBuilder,
-  		private navCtrl: NavController
-  	) {
+  	constructor(fb: FormBuilder, private navCtrl: NavController, private auth: AuthService) {
   		this.form = fb.group({
   			email: ['', Validators.compose([Validators.required, Validators.email])],
   			password: ['', Validators.compose([Validators.required, Validators.minLength(6)])]
@@ -40,11 +41,8 @@ export class RegisterPage {
 
   register(){
     let data = this.form.value;
-    		let credentials = {
-    			email: data.email,
-    			password: data.password
-    		};
-    		this.auth.signUp(credentials).then(
+
+    		this.auth.signUp(this.registerCredentials).then(
     			() => this.navCtrl.setRoot(HomePage),
     			error => this.signupError = error.message
     		);
